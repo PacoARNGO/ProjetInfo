@@ -33,7 +33,7 @@ class Plateau():
 
 
 
-    def generation(self, Nb_dominos):
+    def generation(self):
         """Création des 28 dominos (case blanche = 0) ainsi qu'une liste de liste
         telle que liste 1 = main J1, liste 2 = main J2, liste 3 = pioche)
 
@@ -51,9 +51,10 @@ class Plateau():
         -----
 
         """
+        Nb_dominos = int(input("Combien de dominos voulez-vous ? (7,8,9,10) : "))
         dominos = []
-        for dots1 in range(0, 7):
-            for dots2 in range(dots1, 7):
+        for dots1 in range(0, Nb_dominos):
+            for dots2 in range(dots1, Nb_dominos):
                 dominos.append([dots1, dots2])
 
         mains = [[] for x in range(3)]

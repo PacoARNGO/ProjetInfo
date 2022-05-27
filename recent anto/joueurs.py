@@ -44,6 +44,8 @@ class Joueur():
         return score
 
 
+
+
 if __name__ == "__main__":
     jo=Joueur("rr",[[6,3]])
     print(jo.verif([[3,2],[2,2]]))
