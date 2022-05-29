@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="iconDom">
+    <file>iconDomino.png</file>
+  </qresource>
+</RCC>

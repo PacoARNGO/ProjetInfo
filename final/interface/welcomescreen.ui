@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WelcomScreen</class>
+ <widget class="QDialog" name="WelcomScreen">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>560</x>
+     <y>670</y>
+     <width>241</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font: 12pt &quot;Onyx&quot;;</string>
+   </property>
+   <property name="text">
+    <string>Paco &amp; Antoine</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>93</y>
+     <width>711</width>
+     <height>549</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="icon">
+      <property name="styleSheet">
+       <string notr="true">background-image: url(:/welcomIcon/welcomicon.jpg);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="../images/menu1.qrc">:/welcomIcon/welcomicon.jpg</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="bouton_jouer">
+      <property name="text">
+       <string>Jouer</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="bouton_quitter">
+      <property name="text">
+       <string>Quitter</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../images/menu1.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>bouton_quitter</sender>
+   <signal>clicked()</signal>
+   <receiver>WelcomScreen</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>547</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>632</x>
+     <y>581</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

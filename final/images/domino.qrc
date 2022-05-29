@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="domTitle">
+    <file>menu.jpg</file>
+  </qresource>
+</RCC>
