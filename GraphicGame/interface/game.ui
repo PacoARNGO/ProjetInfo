@@ -14,11 +14,21 @@
    <string>Fenêtre avec vues</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QGraphicsView" name="vuePlateau"/>
-    </item>
-   </layout>
+   <widget class="QSplitter" name="splitter">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>521</width>
+      <height>551</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+    <widget class="QGraphicsView" name="vuePlateau"/>
+    <widget class="QGraphicsView" name="vueMain"/>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -37,12 +47,16 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLineEdit" name="NomJoueur"/>
+      <widget class="QPushButton" name="pushButtonJoueur1">
+       <property name="text">
+        <string>Joueur 1</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonJoueur">
+      <widget class="QPushButton" name="pushButtonJoueur2">
        <property name="text">
-        <string>Entrée le nom d'un joueur</string>
+        <string>Joueur 2</string>
        </property>
       </widget>
      </item>
@@ -58,9 +72,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QGraphicsView" name="vueMain"/>
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonTourner">
