@@ -22,7 +22,7 @@ class Tour():
         return "------------------------------------------------------- \n" + \
                 f"Tour n°: {self.numeroTour} \n"
 
-    def mise_en_jeu(self, plateau, joueurs,i):
+    def mise_en_jeu(self, plateau, joueurs,i,choix):
         """
         Lance le "tour 0" où le premier joueur et renvoie l'état initial du plateau
         :param plateau: list
@@ -31,15 +31,14 @@ class Tour():
         :return: list
         """
 
-        print(f"{joueurs[i].nom} - pièces: ")
-        print(joueurs[i].pieces)
-        choix = int(input(f"{joueurs[i].nom} - Choisissez, si possible, un double le plus élevé possible : ")) -1
-        start = joueurs[i].pieces[choix]
+
+
+        start = choix
         self.start = start
-        plateau += [joueurs[i].pieces[choix]]
-        joueurs[i].pieces.pop(choix)
+        plateau += [start]
+        joueurs[i].pieces.pop(joueurs[i].pieces.index(choix))
         joueurs.insert(len(joueurs),joueurs.pop(0))
-        print('------------------------------------------------------- \n')
+
         return plateau
 
 

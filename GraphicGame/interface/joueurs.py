@@ -9,7 +9,7 @@ class Joueur():
     '''
     Classe définissant les attributs d'un joueur
     '''
-    def __init__(self, nom, main, passer_la_main=0):
+    def __init__(self, nom, main=[], passer_la_main=0):
         self.nom = nom
         self.pieces = main
         self.passer_la_main = passer_la_main

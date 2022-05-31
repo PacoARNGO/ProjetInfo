@@ -85,7 +85,7 @@ class Plateau():
             if self.plateau[x][0] != self.plateau[x-1][-1] :
                 self.plateau[x-1].insert(len(self.plateau[x-1]),self.plateau[x-1].pop(0))
 
-    def premier_joueur(self,pieces):
+    def premier_joueur(self,main_j1, main_j2):
         """
         Renvoie l'indice du joueur 1 possédant un double élevé
         :param pieces: list
@@ -93,9 +93,9 @@ class Plateau():
         """
         i=0
         for k in range(6,-1,-1):
-                if [k,k] in pieces[0]:
+                if [k,k] in main_j1:
                     break
-                elif [k,k] in pieces[1]:
+                elif [k,k] in main_j2:
                     i = 1
                     break
         return i

@@ -23,25 +23,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.scene = QGraphicsScene()
-        plateau = Plateau()
-        tour = Tour(plateau)
-        #self.scene.setSceneRect(-H_PLATEAU/2,-L_PLATEAU/2,H_PLATEAU,L_PLATEAU)
+        self.plateau = Plateau()
+        self.tour = Tour(self.plateau)
+        self._joueurs = [Joueur("Joueur 1"), Joueur("Joueur 2")]  # Liste des joueurs
+        self.choix = None
+        #self.scene.setSceneRect(0,0,H_PLATEAU,L_PLATEAU)
         self.remplirScene()
-        main_j1, main_j2 = self.dessinerMains(plateau)
-        joueurs = []
-        joueurs.append(Joueur("Joueur 1", main_j1))
-        joueurs.append(Joueur("Joueur 2", main_j2))
-
-
-
-        self.dessiner_Tuile([6,6], self.rectPlateau.rect().center())
         self.dessiner_Tuile([6,1], [100,100])
-        print("Plateau")
-        for item in self.selectionner_plateau():
-            print(self.reco_tuile(item))
-            print("Main")
-        for item in self.selectionner_main(1):
-            print(self.reco_tuile(item))
+
         self.show()
 
         for vue in (self.vuePlateau, self.vueMain):
@@ -55,7 +44,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.vueMain.centerOn(self.rectPlateau.rect().center())
         self.vueMain.scale(1,1.25)
 
-
+    @property
+    def joueurs(self):
+        return self._joueurs
 
     def remplirScene(self):
         global H_PLATEAU
@@ -63,6 +54,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         scene = self.scene
         rectPlateau = scene.addRect(0, 0, H_PLATEAU, L_PLATEAU, brush=QBrush(Qt.lightGray))
         self.rectPlateau = rectPlateau
+        self.plateau.bienvenue()
+        self.dessinerMains(self.plateau)
+
 
         #TEXTE
 
@@ -261,7 +255,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def dessinerMains(self,plateau):
-        main_j1, main_j2, pioche = plateau.generation(7)
+        tuiles = plateau.generation(7)
+        main_j1, main_j2, pioche = tuiles
+        self.plateau.pioche = pioche
+        self.joueurs[0].pieces = main_j1
+        self.joueurs[1].pieces = main_j2
+        k = self.plateau.premier_joueur(main_j1, main_j2)
+        print(f"{self.joueurs[k].nom} - Choisissez, si possible, un double le plus élevé possible : ")
+        print('------------------------------------------------------- \n')
+
         dx = 0
         for domino in main_j1:
             pos = [self.rectPlateau.rect().bottomLeft().x()+ dx, self.rectPlateau.rect().bottomLeft().y()+10]
@@ -272,10 +274,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pos = [self.rectPlateau.rect().bottomRight().x()- dx, self.rectPlateau.rect().bottomRight().y()+10]
             self.dessiner_Tuile(domino,pos)
             dx += 20 + L_TUILE
-
-        joueurs = []
-        joueurs.append(Joueur("Joueur 1", main_j1))
-        joueurs.append(Joueur("Joueur 2", main_j2))
         return main_j1, main_j2
 
     #def dessinerPlateau(self):
@@ -309,19 +307,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         plateau_items = self.scene.selectedItems()
         return plateau_items
 
+    def afficher_selection(self,dominos):
+        for item in dominos:
+            print(self.reco_tuile(item))
+
     def changerVue(self, i):
         if i == 1:
             self.vueMain.centerOn(self.rectPlateau.rect().bottomLeft().x(), self.rectPlateau.rect().bottomLeft().y()+10)
         elif i == 2:
             self.vueMain.centerOn(self.rectPlateau.rect().bottomRight().x(), self.rectPlateau.rect().bottomRight().y()+10)
-        # if i == 1:
-        #     self.vueMain.centerOn(-L_PLATEAU/2 -300, H_PLATEAU/2+30)
-        # elif i == 2:
-        #     self.vueMain.centerOn(L_PLATEAU/2 +300, H_PLATEAU/2 + 30)
+        elif i == 3:
+            self.vueMain.centerOn(self.rectPlateau.rect().center())
+
+    def premier_tour(self,item):
+        a,b = self.reco_tuile(item)
+        item.setPos(self.rectPlateau.rect().center())
+        self.choix = [a,b]
+        joueur1 = self.joueurs[0]
+        joueur2 = self.joueurs[1]
+        k = self.plateau.premier_joueur(joueur1.pieces,joueur2.pieces)  # k est l'indice du joueur commencant la partie (plus grand double)
+        self.plateau.plateau = self.tour.mise_en_jeu(self.plateau.plateau, self.joueurs, k,
+                                                self.choix)  # On met les pièces sur le plateau
+        self.changerVue(3)
+        return k
 
 
     def jouer(self,item1,item2):
-        rectPlateau = self.rectPlateau
         [a,b] = self.reco_tuile(item1)
         c,d = self.reco_tuile(item2)
         print(a,b)
@@ -333,6 +344,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tuileB2 = item2.childItems()[2]
         print("start")
         if a==c:
+            rot = item1.rotation()
+            item1.setRotation(0)
             pos1 = item1.scenePos()
             print(pos1)
             pos2 = item2.scenePos()
@@ -340,6 +353,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             vect = pos2-pos1
             print(vect)
             item1.setPos(item1.scenePos()+vect)
+            print(tuileA2.rect().center())
+            pos1 = item1.scenePos()
+
+            item1.setPos(pos1.x()+L_TUILE+10,pos1.y()+L_TUILE+5)
+            item1.setRotation(rot)
+            self.afficher_selection(self.selectionner_plateau())
+
+
+    def tour_suivant(self, k):
+        joueur_suivant = self.joueurs[k]
+        print(self.tour)
+        print(self.plateau)
+        print(joueur_suivant)
+        self.changerVue(k)
+
 
 
 
@@ -348,16 +376,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pos = item.mapToScene(self.rectPlateau.rect().center())
         return pos
 
-    def item2global_pos(self,item):
-        sceneP = item.mapToScene(item.boundingRect().center())
-        viewP = self.vuePlateau.mapFromScene(sceneP)
-        sendPos = self.vuePlateau.viewport().mapToGlobal(viewP)
-        return sendPos
-
-    def global2item_pos(self,pos):
-        viewP = self.vuePlateau.viewport().mapFromGlobal(pos)
-        sceneP = self.rectPlateau.mapToScene(viewP)
-        item_pos = self.rectPlateau.mapFromScene(self.rectPlateau.boundingRect().center())
 
     @pyqtSlot()
     def on_pushButtonJoueur1_clicked(self):
@@ -383,14 +401,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print(itemsSelectionnes)
         if len(itemsSelectionnes)>0:
             print("button")
+            if len(itemsSelectionnes)==2:
+                item1 = itemsSelectionnes[0]
+                item2 = itemsSelectionnes[1]
+                print("coord",self.get_coord(item1))
+                for item in itemsSelectionnes:
+                    print(self.reco_tuile(item))
+                self.jouer(item1,item2)
+            elif len(itemsSelectionnes)==1 and len(self.plateau.plateau)<=1:
+                item = itemsSelectionnes[0]
+                i = (self.premier_tour(item)+1)%2
+                self.tour_suivant(i)
 
-            item1 = itemsSelectionnes[0]
-            item2 = itemsSelectionnes[1]
-            print(self.item2global_pos(item1))
-            print("coord",self.get_coord(item1))
-            for item in itemsSelectionnes:
-                print(self.reco_tuile(item))
-            self.jouer(item1,item2)
+
+
+
+
 
 
     @pyqtSlot()
