@@ -20,7 +20,7 @@ class Joueur():
 
     def verif(self, plateau):
         """
-        Vérifie que si le joueur est en mesure de jouer
+        Vérifie si le joueur est en mesure de jouer
         :param plateau: list
         :return: bool
         """
