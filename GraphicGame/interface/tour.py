@@ -36,7 +36,10 @@ class Tour():
         start = choix
         self.start = start
         plateau += [start]
-        joueurs[i].pieces.pop(joueurs[i].pieces.index(choix))
+        try :
+            joueurs[i].pieces.pop(joueurs[i].pieces.index(choix))
+        except ValueError:
+            joueurs[i].pieces.pop(joueurs[i].pieces.index([choix[1],choix[0]]))
         joueurs.insert(len(joueurs),joueurs.pop(0))
 
         return plateau
