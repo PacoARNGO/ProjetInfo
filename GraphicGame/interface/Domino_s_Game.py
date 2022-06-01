@@ -6,7 +6,7 @@ import sys
 
 from GraphicGame.interface.joueurs import Joueur
 from game import Ui_MainWindow
-from PyQt5.QtCore import Qt, pyqtSlot, QPointF, QRectF
+from PyQt5.QtCore import Qt, pyqtSlot, QPointF, QRectF, QSize
 from PyQt5.QtGui import QBrush, QPen, QPainter, QTransform, QPainterPath
 from PyQt5.QtWidgets import QApplication, QMainWindow, \
     QGraphicsScene, QGraphicsView, QGraphicsItem, \
@@ -21,6 +21,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
 
         super(MainWindow, self).__init__(parent)
+        self.zoomPctVue = 1
+        self.k = 0
         self.setupUi(self)
         self.scene = QGraphicsScene()
         self.plateau = Plateau()
@@ -29,7 +31,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.choix = None
         #self.scene.setSceneRect(0,0,H_PLATEAU,L_PLATEAU)
         self.remplirScene()
-        self.dessiner_Tuile([6,1], [100,100])
 
         self.show()
 
@@ -38,9 +39,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             vue.setRenderHints(QPainter.Antialiasing)
             if vue == self.vuePlateau:
                 vue.fitInView(self.rectPlateau, Qt.KeepAspectRatio)
-
-            vue.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            vue.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.vueMain.centerOn(self.rectPlateau.rect().center())
         self.vueMain.scale(1,1.25)
 
@@ -58,15 +56,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dessinerMains(self.plateau)
 
 
-        #TEXTE
 
-        # self.texte = scene.addText("Domino's game \n"\
-        #                            "by Antoine&Paco\n"\
-        #                               "\n"\
-        #                            "Jouer en mode 2 joueurs")
-        #self.texte.setPos(-L_PLATEAU/2 + 150 ,-H_PLATEAU)
-        #self.texte.setDefaultTextColor(Qt.cyan)
-        #scene.addItem(self.texte)
+
+        self.texte = scene.addText("Domino's game \n"\
+                                   "by Antoine&Paco\n"\
+                                      "\n"\
+                                   "Jouer en mode 2 joueurs\n"
+                                   "Pour Jouer: sélectionner un domino dans la main du joueur,\n"\
+                                   "puis sélectionner (Ctr+clic) un domino \n"
+                                   " sur le plateau et appuyer sur Jouer\n"
+                                   "Tourner le domino avant de le bouger \n"
+                                   "pour l'ajuster à la place imaginée sur le plateau")
+        self.texte.setPos(QPointF(L_PLATEAU/4, H_PLATEAU/4))
+        self.texte.setDefaultTextColor(Qt.black)
+        scene.addItem(self.texte)
 
 
     def dessiner_Tuile(self, domino, pos, rot = 0):
@@ -260,7 +263,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plateau.pioche = pioche
         self.joueurs[0].pieces = main_j1
         self.joueurs[1].pieces = main_j2
-        k = self.plateau.premier_joueur(main_j1, main_j2)
+        self.k = self.plateau.premier_joueur(main_j1, main_j2)
+        k = self.k
         print(f"{self.joueurs[k].nom} - Choisissez, si possible, un double le plus élevé possible : ")
         print('------------------------------------------------------- \n')
 
@@ -325,48 +329,81 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.choix = [a,b]
         joueur1 = self.joueurs[0]
         joueur2 = self.joueurs[1]
-        k = self.plateau.premier_joueur(joueur1.pieces,joueur2.pieces)  # k est l'indice du joueur commencant la partie (plus grand double)
-        self.plateau.plateau = self.tour.mise_en_jeu(self.plateau.plateau, self.joueurs, k,
+        self.k = self.plateau.premier_joueur(joueur1.pieces,joueur2.pieces)  # k est l'indice du joueur commencant la partie (plus grand double)
+        self.plateau.plateau = self.tour.mise_en_jeu(self.plateau.plateau, self.joueurs, self.k,
                                                 self.choix)  # On met les pièces sur le plateau
         self.changerVue(3)
-        return k
+        self.scene.removeItem(self.texte)
 
 
     def jouer(self,item1,item2):
         [a,b] = self.reco_tuile(item1)
         c,d = self.reco_tuile(item2)
-        print(a,b)
-        print(c,d)
-        print(item1)
-        tuileA1 = item1.childItems()[1]
-        tuileB1 = item1.childItems()[2]
-        tuileA2 = item2.childItems()[1]
-        tuileB2 = item2.childItems()[2]
-        print("start")
+        rot = item1.rotation()
+        item1.setRotation(0)
+        pos1 = item1.scenePos()
+        pos2 = item2.scenePos()
+        vect = pos2 - pos1
+        pos1 = item1.scenePos()
+        pos2 = item2.scenePos()
+        vect = pos2 - pos1
+        if a == b:
+            equal = True
         if a==c:
-            rot = item1.rotation()
-            item1.setRotation(0)
-            pos1 = item1.scenePos()
-            print(pos1)
-            pos2 = item2.scenePos()
-            print(pos2)
-            vect = pos2-pos1
-            print(vect)
-            item1.setPos(item1.scenePos()+vect)
-            print(tuileA2.rect().center())
-            pos1 = item1.scenePos()
+            point = QPointF(0,-5)
+            if rot == 0:
+                point = QPointF(0, 10+H_TUILE)
+            elif rot == 90:
+                point += QPointF(L_TUILE,-L_TUILE)
+            elif rot == 180:
+                point += QPointF(L_TUILE,0)
+            elif rot == 270:
+                point += QPointF(0,0)
+        elif a == d:
+            #pareil qu'au dessus
+            point = QPointF(0,5)
+            if rot == 0:
+                point = QPointF(0,H_TUILE)
+            elif rot == 90:
+                point += QPointF(L_TUILE, -L_TUILE)
+            elif rot == 180:
+                point += QPointF(L_TUILE, 0)
+            elif rot == 270:
+                point += QPointF(0, H_TUILE+L_TUILE)
+        elif b == c:
+            point = QPointF(0, -5)
+            if rot == 0:
+                point += QPointF(0, -H_TUILE)
+            elif rot == 90:
+                point += QPointF(L_TUILE, -L_TUILE)
+            elif rot == 180:
+                point += QPointF(0, 2*H_TUILE)
+            elif rot == 270:
+                point += QPointF(0, L_TUILE)
 
-            item1.setPos(pos1.x()+L_TUILE+10,pos1.y()+L_TUILE+5)
-            item1.setRotation(rot)
-            self.afficher_selection(self.selectionner_plateau())
+        elif b == d:
+            #pareil qu'au dessus
+            point = QPointF(0,5)
+            if rot == 90:
+                point += QPointF(H_TUILE, H_TUILE)
+            if rot == 180:
+                point += QPointF(L_TUILE,H_TUILE+ L_TUILE)
+            if rot == 270:
+                point += QPointF(0, H_TUILE+L_TUILE)
+
+        item1.setPos(item1.scenePos() + vect + point)
+        item1.setTransformOriginPoint(item1.boundingRect().topLeft())
+        item1.setRotation(rot)
+        self.afficher_selection(self.selectionner_plateau())
 
 
-    def tour_suivant(self, k):
-        joueur_suivant = self.joueurs[k]
+    def tour_suivant(self):
+        joueur_suivant = self.joueurs[self.k%2]
         print(self.tour)
         print(self.plateau)
         print(joueur_suivant)
-        self.changerVue(k)
+        self.changerVue(3)
+        self.k += 1
 
 
 
@@ -376,6 +413,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pos = item.mapToScene(self.rectPlateau.rect().center())
         return pos
 
+    @pyqtSlot(int)
+    def on_horizontalSliderZoom_valueChanged(self,nouvZoomPctVue):
+        f = (nouvZoomPctVue/100.) / self.zoomPctVue
+        self.vuePlateau.scale(f,f)
+        self.vuePlateau.centerOn(self.rectPlateau.rect().center())
+        self.zoomPctVue = nouvZoomPctVue/100.
 
     @pyqtSlot()
     def on_pushButtonJoueur1_clicked(self):
@@ -402,16 +445,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(itemsSelectionnes)>0:
             print("button")
             if len(itemsSelectionnes)==2:
-                item1 = itemsSelectionnes[0]
-                item2 = itemsSelectionnes[1]
-                print("coord",self.get_coord(item1))
                 for item in itemsSelectionnes:
-                    print(self.reco_tuile(item))
+                    if item in self.selectionner_main(1) or item in self.selectionner_main(2):
+                        item1 = itemsSelectionnes.pop(itemsSelectionnes.index(item))
+                        self.choix = self.reco_tuile(item1)
+                        print(self.choix)
+                item2 = itemsSelectionnes.pop(0)
                 self.jouer(item1,item2)
+                self.tour_suivant()
             elif len(itemsSelectionnes)==1 and len(self.plateau.plateau)<=1:
                 item = itemsSelectionnes[0]
-                i = (self.premier_tour(item)+1)%2
-                self.tour_suivant(i)
+                self.premier_tour(item)
+                self.tour_suivant()
 
 
 
