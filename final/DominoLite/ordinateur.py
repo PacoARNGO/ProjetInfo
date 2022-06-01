@@ -1,5 +1,5 @@
 from joueurs import Joueur
-from final.plateau import Plateau
+from plateau import Plateau
 
 class Ordinateur(Joueur):
     '''
@@ -60,7 +60,18 @@ class Ordinateur(Joueur):
 
 
     def meilleure_tuile(self, plateau, tuiles_jouables):
+        """
+        Cette fonction renvoie la meilleure tuile à jouer selon 5 critères:
+        1. la tuile avec le plus de points
+        2. la tuile est un double
+        3. garder les plus de tuiles différentes
+        4. vérifier que la tuile n'a pas été jouée six fois
+        5. la tuile la plus grande favorisée
 
+        :param plateau:
+        :param tuiles_jouables:
+        :return:
+        """
         valeur_gauche = plateau[0][0]
         valeur_droite = plateau[-1][-1]
 

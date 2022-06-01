@@ -1,7 +1,5 @@
-import numpy as np
 from numpy.random import randint
-from final.joueurs import *
-from final.tour import *
+from joueurs import *
 
 """
 Ce module contient la définition de la classe Plateau où sont déposés les dominos

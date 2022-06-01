@@ -1,7 +1,7 @@
 from plateau import Plateau
-from final.tour import Tour
-from final.joueurs import Joueur
-from final.ordinateur import Ordinateur
+from tour import Tour
+from joueurs import Joueur
+from ordinateur import Ordinateur
 
 def main():
     end = False

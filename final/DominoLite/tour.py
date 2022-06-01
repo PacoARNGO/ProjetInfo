@@ -1,8 +1,3 @@
-import numpy as np
-from numpy.random import randint
-from final.joueurs import *
-from final.plateau import *
-from final.ordinateur import *
 import time
 
 """
