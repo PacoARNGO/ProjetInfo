@@ -9,7 +9,7 @@ from game import Ui_MainWindow
 from PyQt5.QtCore import Qt, pyqtSlot, QPointF, QRectF, QSize
 from PyQt5.QtGui import QBrush, QPen, QPainter, QTransform, QPainterPath
 from PyQt5.QtWidgets import QApplication, QMainWindow, \
-    QGraphicsScene, QGraphicsView, QGraphicsItem, \
+    QGraphicsScene, QGraphicsView, QGraphicsItem, QDialog, \
     QGraphicsEllipseItem, QColorDialog, QGraphicsItemGroup, QGraphicsRectItem
 from VariablesEtConstantes import *
 from plateau import Plateau
@@ -280,7 +280,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             dx += 20 + L_TUILE
         return main_j1, main_j2
 
-    #def dessinerPlateau(self):
     def reco_tuile(self,item):
         a,b = [0,0]
         tuileA = item.childItems()[1]
@@ -339,61 +338,64 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def jouer(self,item1,item2):
         [a,b] = self.reco_tuile(item1)
         c,d = self.reco_tuile(item2)
-        rot = item1.rotation()
+        rot1 = item1.rotation()
+        rot2 = item2.rotation()
         item1.setRotation(0)
+        item2.setTransformOriginPoint(item1.boundingRect().center())
+        item2.setRotation(0)
         pos1 = item1.scenePos()
         pos2 = item2.scenePos()
         vect = pos2 - pos1
         pos1 = item1.scenePos()
         pos2 = item2.scenePos()
         vect = pos2 - pos1
-        if a == b:
-            equal = True
+
+
         if a==c:
             point = QPointF(0,-5)
-            if rot == 0:
+            if rot1 == 0:
                 point = QPointF(0, 10+H_TUILE)
-            elif rot == 90:
+            elif rot1 == 90:
                 point += QPointF(L_TUILE,-L_TUILE)
-            elif rot == 180:
+            elif rot1 == 180:
                 point += QPointF(L_TUILE,0)
-            elif rot == 270:
+            elif rot1 == 270:
                 point += QPointF(0,0)
         elif a == d:
-            #pareil qu'au dessus
             point = QPointF(0,5)
-            if rot == 0:
+            if rot1 == 0:
                 point = QPointF(0,H_TUILE)
-            elif rot == 90:
+            elif rot1 == 90:
                 point += QPointF(L_TUILE, -L_TUILE)
-            elif rot == 180:
+            elif rot1 == 180:
                 point += QPointF(L_TUILE, 0)
-            elif rot == 270:
+            elif rot1 == 270:
                 point += QPointF(0, H_TUILE+L_TUILE)
         elif b == c:
             point = QPointF(0, -5)
-            if rot == 0:
+            if rot1 == 0:
                 point += QPointF(0, -H_TUILE)
-            elif rot == 90:
+            elif rot1 == 90:
                 point += QPointF(L_TUILE, -L_TUILE)
-            elif rot == 180:
+            elif rot1 == 180:
                 point += QPointF(0, 2*H_TUILE)
-            elif rot == 270:
+            elif rot1 == 270:
                 point += QPointF(0, L_TUILE)
 
         elif b == d:
-            #pareil qu'au dessus
             point = QPointF(0,5)
-            if rot == 90:
+            if rot1 == 90:
                 point += QPointF(H_TUILE, H_TUILE)
-            if rot == 180:
+            if rot1 == 180:
                 point += QPointF(L_TUILE,H_TUILE+ L_TUILE)
-            if rot == 270:
+            if rot1 == 270:
                 point += QPointF(0, H_TUILE+L_TUILE)
 
         item1.setPos(item1.scenePos() + vect + point)
         item1.setTransformOriginPoint(item1.boundingRect().topLeft())
-        item1.setRotation(rot)
+        item1.setRotation(rot1)
+        item2.setTransformOriginPoint(item1.boundingRect().center())
+        item2.setRotation(rot2)
         self.afficher_selection(self.selectionner_plateau())
 
 
@@ -406,7 +408,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.k += 1
 
 
+    def pop_msgbox(self, msg):
 
+        msgbox= QDialog.QMessageBox()
+        msgbox.setText(msg)
+        msgbox.setStandardButtons(QDialog.QMessageBox.Yes | QDialog.QMessageBox.No)
+        msgbox.setDefaultButton(QDialog.QMessageBox.Yes)
+        ret = msgbox.exec_()
 
 
     def get_coord(self,item):
@@ -457,10 +465,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 item = itemsSelectionnes[0]
                 self.premier_tour(item)
                 self.tour_suivant()
-
-
-
-
 
 
 
