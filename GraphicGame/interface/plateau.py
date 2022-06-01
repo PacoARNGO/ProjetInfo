@@ -7,7 +7,7 @@ from tour import *
 Ce module contient la définition de la classe Plateau où sont déposés les dominos
 """
 
-class Plateau():
+class Plateau(object):
     '''
     Classe gérant le plateau de dominos
     '''

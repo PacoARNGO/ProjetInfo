@@ -26,6 +26,7 @@ class Joueur():
         """
         gauche = plateau.plateau[0][0]
         droite = plateau.plateau[-1][-1]
+        tuiles_jouables = []
         for piece in self.pieces:
             for num in piece:
                 if num == gauche or num == droite:
