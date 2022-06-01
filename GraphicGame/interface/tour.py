@@ -31,8 +31,6 @@ class Tour():
         :return: list
         """
 
-
-
         start = choix
         self.start = start
         plateau += [start]

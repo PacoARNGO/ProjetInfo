@@ -9,14 +9,28 @@ class Joueur():
     '''
     Classe définissant les attributs d'un joueur
     '''
-    def __init__(self, nom, main, passer_la_main=0):
+    def __init__(self, nom, main, passer_la_main=0,ordi=0):
         self.nom = nom
         self.pieces = main
         self.passer_la_main = passer_la_main
+        self.ordi = ordi
+
 
     def __str__(self):
         return f"{self.nom} - pièces : \n"+\
-                str(self.pieces)
+                str(self.pieces) if self.ordi==0 else f"{self.nom} - {len(self.pieces)} pièces dans sa main"
+
+    def tuiles_jouables(self, gauche, droite):
+        """
+        Cette fonction renvoie une liste de tuiles appropriées à jouer
+        """
+        tuiles_jouables = []
+
+        for tuile in self.pieces:
+            if (gauche in tuile) or (droite in tuile):
+                tuiles_jouables.append(tuile)
+
+        return tuiles_jouables
 
     def verif(self, plateau):
         """

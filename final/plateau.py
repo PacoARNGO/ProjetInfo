@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.random import randint
-from joueurs import *
-from tour import *
+from final.joueurs import *
+from final.tour import *
 
 """
 Ce module contient la définition de la classe Plateau où sont déposés les dominos
@@ -14,6 +14,7 @@ class Plateau():
     def __init__(self, plateau=[], pioche=[]):
         self.plateau = plateau
         self.pioche = pioche
+        self.jeu_pioche = False
 
     def __str__(self):
         l = len(self.plateau)
@@ -33,7 +34,7 @@ class Plateau():
 
 
 
-    def generation(self):
+    def generation(self,Nb_dominos = 7):
         """Création des 28 dominos (case blanche = 0) ainsi qu'une liste de liste
         telle que liste 1 = main J1, liste 2 = main J2, liste 3 = pioche)
 

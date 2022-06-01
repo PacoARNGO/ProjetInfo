@@ -1,8 +1,10 @@
 import random
+import unittest
+
 from plateau import *
 import numpy as np
-class TestDomino():
-    def test_dispoPlateau():
+class TestDomino(unittest.TestCase):
+    def test_dispoPlateau(self):
         for i in range(3):
             nd = random.randint(0, 28)
             plat = Plateau([[random.randint(0, 7), random.randint(0, 7)] for k in range(nd)], [])
@@ -16,10 +18,10 @@ class TestDomino():
                 if plat.plateau[x][0] != plat.plateau[x - 1][-1]:
                     return False
 
-    def test_var():
+    def test_var(self):
         for i in range(3):
             plat = Plateau()
-            pieces = plat.generation(7)
+            pieces = plat.generation()
             verif = []
             for i in range(7):
                 for j in range(7):
