@@ -133,6 +133,7 @@ class Tour():
                     ret = "Jouer à droite"
                     print(ret)
                     plateau.plateau.append(choix)
+                    joueur.pieces.pop(joueur.pieces.index(choix))
                 plateau.dispositionPlateau(self.start)
         else:
             if plateau.jeu_pioche:
