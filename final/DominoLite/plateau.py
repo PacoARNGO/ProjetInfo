@@ -50,19 +50,23 @@ class Plateau():
         -----
 
         """
+
         Nb_dominos = int(input("Combien de dominos voulez-vous ? (7,8,9,10) : "))
+        while Nb_dominos not in [7,8,9,10]: #On vérifie que le nombre de dominos est bien compris entre 7 et 10
+            Nb_dominos = int(input("Combien de dominos voulez-vous ? (7,8,9,10) : "))
+
         dominos = []
-        for dots1 in range(0, Nb_dominos):
+        for dots1 in range(0, Nb_dominos):  #Création des dominos
             for dots2 in range(dots1, Nb_dominos):
                 dominos.append([dots1, dots2])
 
-        mains = [[] for x in range(3)]
+        mains = [[] for x in range(3)]  #Création des mains
 
         # On remplit final_list de tuples aléatoires
         for i in range(0, Nb_dominos):
             for j in range(2):
-                random_number = np.random.randint(0, len(dominos))
-                mains[j].append(dominos.pop(random_number))
+                random_number = np.random.randint(0, len(dominos))  # On tire un nombre aléatoire
+                mains[j].append(dominos.pop(random_number)) # On ajoute une tuile aléatoire à la main du joueur
         mains[2] = dominos
         return mains
 
